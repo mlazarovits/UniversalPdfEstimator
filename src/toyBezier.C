@@ -1,5 +1,7 @@
 #include <iostream>
 #include "RandomSample.hh"
+#include "BezierCurve.hh"
+
 #include <TH1D.h>
 #include <TFile.h>
 
@@ -17,18 +19,20 @@ int main(int argc, char *argv[]){
 	double sigma = 1.;
 	double xmax = 5;
 	double xmin = -xmax;
-	RandomSample rs(seed);
 	bool viz = false;
 	string fname;
 	if(argc > 1){
 		viz = true;
 		fname = string(argv[1]);
 	}
+	
+	RandomSample rs(seed);
+	double cps[] = {-1.5, 0., 1.0};
+	BezierCurve bc(cps, 3);
 
 	rs.SetRange(xmin,xmax);
 
 	rs.SampleGaussian(mu, sigma, nSample, x);
-
 	
 	if(viz){
 		TH1D* hist = new TH1D("hist","hist",20,xmin,xmax);	

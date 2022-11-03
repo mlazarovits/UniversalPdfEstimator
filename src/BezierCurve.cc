@@ -16,13 +16,13 @@ BezierCurve::~BezierCurve(){ }
 
 
 double BezierCurve::BinomialCoeff(int n,int k){
-	if(k > _n){
+	if(k > n){
 		cout << "k must be less than n." << endl;
 		return -999;
 	}
-	if (k == 0 || k == _n)
+	if (k == 0 || k == n)
 		return 1;
-	return BinomialCoeff(_n - 1, k - 1) + BinomialCoeff(_n - 1, k);
+	return BinomialCoeff(n - 1, k - 1) + BinomialCoeff(n - 1, k);
 }
 
 
@@ -38,14 +38,33 @@ double BezierCurve::FindExtremum(double *x, int n, bool max){
 }
 
 
-double BezierCurve::BernsteinPolynomial(double* x){
+double BezierCurve::BernsteinPolynomial(double t, int n, int k){
+	//k should run from 0 to n
+	if(k > n || k < 0){ cout << "Error: k must be 0 < k < n. k = " << k << endl; return 0; }
+	
+	//check t is between [0,1]
+	if(t < 0 || t > 1){ cout << "Error: t must be 0 < t < 1. t = " << t << endl; return 0.; }
+	
+	double coeff = BinomialCoeff(n,k);
+
+	return coeff*pow((1 - t),n-k)*pow(t,k);
+}
+
+
+void BezierCurve::CalculateCurve(double* x, int nSamples, double* r){
 	//map x to t from [0,1]
-	int max = FindExtremum(x,_n,true);
-
-	//k runs from 0 to _n
-	int k = 1;
-	double bc = BinomialCoeff(_n,k);
-
-	return bc;//*pow(1-x,n-k)*pow(x,k);
+	double xmax = FindExtremum(x,nSamples,true);
+	double xmin = FindExtremum(x,nSamples,false);
+	double xint = (xmax - xmin); 
+	double t[nSamples];
+	for(int i = 0; i < nSamples; i++){
+		t[i] = (x[i] - xmin)/xint;
+		r[i] = 0.;
+		//sum over n control points
+		for(int k = 0; k < _n+1; k++){
+			r[i] += _cp[k]*BernsteinPolynomial(t[i],_n,k);
+		}
+	}
+//	return r;
 }
 

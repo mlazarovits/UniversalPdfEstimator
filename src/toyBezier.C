@@ -27,13 +27,18 @@ int main(int argc, char *argv[]){
 	}
 	
 	RandomSample rs(seed);
-	double cps[] = {-1.5, 0., 1.0};
-	BezierCurve bc(cps, 3);
+	int nCPs = 3;
+	double cps[3] = {-1.5, 0., 1.0};
+	BezierCurve bc(cps, nCPs);
 
 	rs.SetRange(xmin,xmax);
 
 	rs.SampleGaussian(mu, sigma, nSample, x);
-	
+
+	double r[nSample];
+	bc.CalculateCurve(x, nSample, r);
+	for(int i = 0; i < nSample; i++) cout << "point #: " << i << " x: " << x[i] << " r: " << r[i] << endl;
+
 	if(viz){
 		TH1D* hist = new TH1D("hist","hist",20,xmin,xmax);	
 		TFile* f = TFile::Open(("test/"+fname).c_str(),"RECREATE");

@@ -7,8 +7,9 @@ class BezierCurve{
 	public:
 		BezierCurve(double *cp, int n_cps);
 		virtual ~BezierCurve();
-		double BernsteinPolynomial(double* x);
+		double BernsteinPolynomial(double t, int n, int k);
 		double FindExtremum(double *x, int n, bool max);
+		void CalculateCurve(double* x, int nSamples, double* r);
 
 		//control points
 		double* _cp;

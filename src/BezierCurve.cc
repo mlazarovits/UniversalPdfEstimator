@@ -65,6 +65,5 @@ void BezierCurve::CalculateCurve(double* x, int nSamples, double* r){
 			r[i] += _cp[k]*BernsteinPolynomial(t[i],_n,k);
 		}
 	}
-//	return r;
 }
 

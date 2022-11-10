@@ -8,6 +8,7 @@ NumDeriv::NumDeriv(double* x, double* y, int n){
 	_x = x;
 	_y = y;
 	_n = n;
+//	for(int i = 0; i < _n; i++) cout << i << " x: " << _x[i] << " y: " << _y[i] << " x+1: " << _x[i+1] << " y+1: " << _y[i+1] << endl;
 }
 
 NumDeriv::~NumDeriv(){ }
@@ -15,10 +16,8 @@ NumDeriv::~NumDeriv(){ }
 
 
 void NumDeriv::FiniteDiff(double* deriv){
-	cout << "FiniteDiff" << endl;
-	for(int i = 0; i < _n-1; i++){
-		deriv[i] = (_x[i+1]-_x[i])/(_y[i+1]-_y[i]);
-		cout << "deriv: " << deriv[i] << " x: " << _x[i] << " y: " << _y[i] << endl;
+	for(int i = 0; i < _n; i++){
+		deriv[i] = (_y[i+1]-_y[i])/(_x[i+1]-_x[i]);
 	}
 }
 
@@ -29,6 +28,10 @@ void NumDeriv::MapToInterval(double new_min, double new_max){
 		if(_x[i] > xmax) xmax = _x[i];
 		if(_x[i] < xmin) xmin = _x[i];
 	}
-	for(int i = 0; i < _n; i++) _x[i] = new_min + ((new_max - new_min)/(xmax - xmin))*(_x[i] - xmin);
-
+//check that given input is within desired interval
+	if(xmax <= new_max && xmin >= new_min) return;
+	
+	for(int i = 0; i < _n; i++){
+	       	_x[i] = new_min + ((new_max - new_min)/(xmax - xmin))*(_x[i] - xmin);
+	}
 }

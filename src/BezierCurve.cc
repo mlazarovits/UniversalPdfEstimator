@@ -5,10 +5,19 @@ using std::cout;
 using std::endl;
 
 
-BezierCurve::BezierCurve(double *cp, int n_cps){
+BezierCurve::BezierCurve(double *cp, int n_cps, double* r, int nSamples){
 	_cp = cp;
-	_n = n_cps;
-//	for(int i = 0; i < n_cps; i++) cout << _cp[i] << endl;
+	//order of Bezier Curve: n = n_cps - 1
+	_n = n_cps - 1;
+	_nSamples = nSamples;
+	for(int i = 0; i < _nSamples+1; i++){
+		r[i] = double(i)/double(_nSamples);
+		if(r[i] > 1 || r[i] < 0){
+			cout << "Invalid r input: " << r[i] << endl;
+			break;
+		}
+	}
+	_r = r;
 }
 
 
@@ -51,19 +60,27 @@ double BezierCurve::BernsteinPolynomial(double t, int n, int k){
 }
 
 
-void BezierCurve::CalculateCurve(double* x, int nSamples, double* r){
+void BezierCurve::CalculateCurve(double* x){
 	//map x to t from [0,1]
-	double xmax = FindExtremum(x,nSamples,true);
-	double xmin = FindExtremum(x,nSamples,false);
-	double xint = (xmax - xmin); 
-	double t[nSamples];
-	for(int i = 0; i < nSamples; i++){
-		t[i] = (x[i] - xmin)/xint;
-		r[i] = 0.;
+	//double xmax = FindExtremum(x,nSamples,true);
+	//double xmin = FindExtremum(x,nSamples,false);
+	//double xint = (xmax - xmin); 
+	//cout << "_nSamples: " << _nSamples << endl;
+	//x[0] = 0.;
+	//x[_nSamples+1] = 1.;	
+	//sample r from 0 to 1 nSamples times
+	for(int i = 0; i < _nSamples+1; i++){
+		x[i] = 0.;
 		//sum over n control points
 		for(int k = 0; k < _n+1; k++){
-			r[i] += _cp[k]*BernsteinPolynomial(t[i],_n,k);
+			x[i] += _cp[k]*BernsteinPolynomial(_r[i],_n,k);
+			//if(i == _nSamples || i == _nSamples - 1) cout << "	n:" << _n << " k:" << k << " x:" <<  x[i] << " cp:" << _cp[k] << " poly:" << BernsteinPolynomial(_r[i],_n,k) << endl;
 		}
+		//cout << "i: " << i << " r: " << _r[i] << " x: " << x[i] << endl;
 	}
+
 }
 
+void BezierCurve::GetInputArray(double *r){
+	r = _r;
+}

@@ -4,6 +4,7 @@
 
 class NumDeriv{
 	public:
+		NumDeriv(){ };
 		NumDeriv(double* x, double* y, int n);
 		virtual ~NumDeriv();
 		void FiniteDiff(double* deriv);

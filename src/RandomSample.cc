@@ -63,7 +63,7 @@ double RandomSample::SampleFlat(){
 	return _xmin + (_xmax - _xmin)*rand();
 }
 
-void RandomSample::SetRange(double xmax, double xmin){
+void RandomSample::SetRange(double xmin, double xmax){
 	if(xmin >= xmax) return;
 	_xmin = xmin;
 	_xmax = xmax;

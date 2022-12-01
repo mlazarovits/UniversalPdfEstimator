@@ -18,7 +18,7 @@ using std::string;
 int main(int argc, char *argv[]){
 	string fname = "test.root";
 	bool viz = false;
-	unsigned long long seed = 1234;
+	unsigned long long seed = 123;
 	int nDataPts = 3;
 	double mu = 0.5;
 	double sigma = 0.25;
@@ -67,6 +67,10 @@ int main(int argc, char *argv[]){
      			i++;
     	 		xmin = std::stod(argv[i]);
    		}
+		if(strncmp(argv[i],"--seed", 6) == 0){
+     			i++;
+    	 		seed = std::stoi(argv[i]);
+   		}
 	
 	}
 	if(hprint){
@@ -93,29 +97,25 @@ int main(int argc, char *argv[]){
 	RandomSample rs(seed);
 	rs.SetRange(xmin,xmax);
 	rs.SampleGaussian(mu, sigma, nDataPts, x);
-//set r coord for simulated data for plotting
+	cout << "sampled data" << endl;
+	//set r coord for simulated data for plotting
 	double r_data[nDataPts];
 	for(int i = 1; i < nDataPts+1; i++) r_data[i] = float(i)/float(nDataPts); 
 //sort sim x for plotting
 	std::sort(x,x+nDataPts);
-	
-//	cout << "Original data points/control points" << endl;
-//	for(int i = 0; i < nDataPts; i++) cout << "point #" << i << ": " << x[i] << endl;
-//	cout << "\n" << endl;
 	int nSamples = 1000;//number of samples for r and Bezier curve NOT including endpoints
 	double x_approx[nSamples+1]; //filled by reference in CalculateCurve
 	double r[nSamples+1];
 	BezierCurve bc(x, nDataPts, r, nSamples);
 	bc.CalculateCurve(x_approx);
-//	cout << "All rank points and corresponding x approx" << endl;
-//	for(int i = 0; i < nSamples+1; i++) cout << "point #" << i << ": r:" << r[i] << " x_approx:" << x_approx[i] << endl;
-//	cout << "\n" << endl;
+	cout << "calculated Bezier curve" << endl;
 	//skip first r point (r = 0) and last point (r = 1)
 	double deriv[nSamples];
 	NumDeriv derivate(r,x_approx,nSamples);
 	derivate.MapToInterval(0.,1.);
 	derivate.FiniteDiff(deriv);
 	double r_deriv[nSamples];
+	cout << "calculated derivative" << endl;
 	
 
 //cout << "last 10 approximation points" << endl;	

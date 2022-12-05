@@ -94,56 +94,83 @@ int main(int argc, char *argv[]){
 //set intermediate (x,r) points, but (0,0) and (1,1) are set
 	nDataPts += 2;
 	double x[nDataPts];
-	double w[nDataPts];
+	double ws[nDataPts];
 	double r[nDataPts];
 
 //simulate data for control points	
 	RandomSample rs(seed);
 	rs.SetRange(xmin,xmax);
 	rs.SampleGaussian(mu, sigma, nDataPts, x);
+	if(nDataPts == 4){
+		x[1] = 0.2;
+		x[2] = 0.8;
+	}
 	x[0] = 0.;
 	x[nDataPts-1] = 1.;
 //sort sim x for plotting
 	std::sort(x,x+nDataPts);
-	
-	//	cout << "sampled data" << endl;
-//	//set rank and weight for simulated data for plotting
-	for(int i = 0; i < nDataPts; i++){
-	       	r[i] = float(i)/float(nDataPts-1);
-		if(i == 0 || i == nDataPts-1) w[i] = 10.;
-		else w[i] = 1.;
-		cout << "x: "<< x[i] << " r: " << r[i] << " with weight: " << w[i] << endl;
+
+
+	int nW = 10;
+	double w_CPs[10] = {1., 10., 20., 30., 40., 50., 60., 70., 80., 90.};
+	TGraph* grs[10];
+	TGraph* grs_n4[10];
+
+	//loop over possible weights
+	for(int w = 0; w < 10; w++){
+
+		//	cout << "sampled data" << endl;
+//		//set rank and weight for simulated data for plotting
+		for(int i = 0; i < nDataPts; i++){
+		       	r[i] = float(i)/float(nDataPts-1);
+			if(i == 0 || i == nDataPts-1) ws[i] = 1.;
+			else ws[i] = w_CPs[w];
+			cout << "x: "<< x[i] << " r: " << r[i] << " with weight: " << ws[i] << endl;
+		}
+
+
+		//need to make x and r functions of t
+		int nSamples = 1000;//number of samples for r and Bezier curve NOT including endpoints
+		double x_approx[nSamples+1]; //filled by reference in CalculateCurve
+		double r_approx[nSamples+1]; //filled by reference in CalculateCurve
+		double t[nSamples+1];
+		BezierCurve x_bc(x, nDataPts, t, nSamples);
+		BezierCurve r_bc(r, nDataPts, t, nSamples);
+		x_bc.CalculateWeightedCurve(x_approx, ws);
+		r_bc.CalculateWeightedCurve(r_approx, ws);
+		cout << "calculated weighted Bezier curves for x and r" << endl;
+		int o = 2;
+		double x_approx_n4[nSamples+1]; //filled by reference in CalculateCurve
+		double r_approx_n4[nSamples+1]; //filled by reference in CalculateCurve
+		x_bc.CalculateWeightedCurve_MultiOrder(x_approx_n4, ws, o);
+		r_bc.CalculateWeightedCurve_MultiOrder(r_approx_n4, ws, o);
+		cout << "calculated weighted Bezier curves for x and r" << endl;
+
+		if(viz){	
+			grs[w] = new TGraph(nSamples+1, r_approx, x_approx);
+			grs_n4[w]  = new TGraph(nSamples+1, r_approx_n4, x_approx_n4);
+			
+			grs[w]->SetLineWidth(1);
+			grs[w]->SetLineColor(kRed-7);
+			grs[w]->SetMarkerStyle(15);
+			grs_n4[w]->SetLineWidth(1);
+			grs_n4[w]->SetLineColor(kBlue-7);
+			grs_n4[w]->SetMarkerStyle(15);
+
+		}
 	}
-
-
-	//need to make x and r functions of t
-	int nSamples = 1000;//number of samples for r and Bezier curve NOT including endpoints
-	double x_approx[nSamples+1]; //filled by reference in CalculateCurve
-	double r_approx[nSamples+1]; //filled by reference in CalculateCurve
-	double t[nSamples+1];
-	BezierCurve x_bc(x, nDataPts, t, nSamples);
-	BezierCurve r_bc(r, nDataPts, t, nSamples);
-	x_bc.CalculateWeightedCurve(x_approx, w);
-	r_bc.CalculateWeightedCurve(r_approx, w);
-	cout << "calculated Bezier curves for x and r" << endl;
-	
 
 //cout << "last 10 approximation points" << endl;	
 //	for(int i = 0; i < nSamples; i++) cout << "point #" << i << ": x_approx: " << x_approx[i] << " r: " << r[i] << " derivative: " << deriv[i] << endl;
 	if(viz){
 		cout << "Plots stored in: " << "test/" << fname << endl;
 		TFile* f = TFile::Open(("test/"+fname).c_str(),"RECREATE");
-		TGraph* gr_approx = new TGraph(nSamples+1, r_approx, x_approx);
 		TGraph* gr_data = new TGraph(nDataPts, r, x);
 		TLine* line = new TLine(0,0,1,1);
 		TMultiGraph* mg = new TMultiGraph();		
 		TLegend* leg = new TLegend(0.54,0.23,0.89,0.35);
 		TCanvas* cv = new TCanvas("cv");
        	
-       		
-		gr_approx->SetLineWidth(1);
-		gr_approx->SetLineColor(kRed-7);
-		gr_approx->SetMarkerStyle(15);
 
 
 		gr_data->SetMarkerSize(0.95);
@@ -152,9 +179,14 @@ int main(int argc, char *argv[]){
        		gr_data->SetMarkerColor(kViolet+7);
 		
 		mg->Add(gr_data);
+		for(int w = 0; w < 10; w++){
+			mg->Add(grs[w]);
+			mg->Add(grs_n4[w]);
+		}
+		
 		leg->AddEntry(gr_data, "Original data/control points");
-		mg->Add(gr_approx);
-		leg->AddEntry(gr_approx,"Bezier Approximation");
+		leg->AddEntry(grs[0],"2nd order Bezier approximation");
+		leg->AddEntry(grs_n4[0],"4th order Bezier approximation");
 		
 		cv->cd();
 		cv->SetRightMargin(0.09);

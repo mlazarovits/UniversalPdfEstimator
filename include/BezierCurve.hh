@@ -11,7 +11,7 @@ class BezierCurve{
 		double FindExtremum(double *x, int n, bool max);
 		void CalculateCurve(double* x);
 		void CalculateWeightedCurve(double* x, double* w);
-		void CalculateWeightedCurve_MultOrder(double* x, double* w, double o);
+		void CalculateWeightedCurve_MultiOrder(double* x, double* w, double o);
 		void GetInputArray(double *r);
 
 		//control points

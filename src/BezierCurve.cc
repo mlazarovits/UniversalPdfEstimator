@@ -80,7 +80,7 @@ void BezierCurve::GetInputArray(double *t){
 
 void BezierCurve::CalculateWeightedCurve(double* x, double* w){
 	//sample r from 0 to 1 nSamples times
-	cout << "order: " << _n << endl;
+//	cout << "order: " << _n << endl;
 	double norm;
 	for(int i = 0; i < _nSamples+1; i++){
 		x[i] = 0.;
@@ -99,9 +99,9 @@ void BezierCurve::CalculateWeightedCurve(double* x, double* w){
 
 
 
-void BezierCurve::CalculateWeightedCurve_MultOrder(double* x, double* w, double o){
+void BezierCurve::CalculateWeightedCurve_MultiOrder(double* x, double* w, double o){
 	//sample r from 0 to 1 nSamples times
-	cout << "order: " << _n*o << " with " << _n+1 << " terms" <<  endl;
+	//cout << "order: " << _n*o << " with " << _n+1 << " terms" <<  endl;
 	double norm;
 	for(int i = 0; i < _nSamples+1; i++){
 		x[i] = 0.;
@@ -109,7 +109,7 @@ void BezierCurve::CalculateWeightedCurve_MultOrder(double* x, double* w, double 
 		//sum over n control points
 		for(int k = 0; k < _n+1; k++){
 			x[i] += _cp[k]*w[k]*BernsteinPolynomial(_t[i],_n*o,k*o);
-			norm += w[k]*BernsteinPolynomial(_t[i],_n,k);
+			norm += w[k]*BernsteinPolynomial(_t[i],_n*o,k*o);
 			//if(i == _nSamples || i == _nSamples - 1) cout << "	n:" << _n << " k:" << k << " x:" <<  x[i] << " cp:" << _cp[k] << " poly:" << BernsteinPolynomial(_t[i],_n,k) << endl;
 		}
 		x[i] /= norm;

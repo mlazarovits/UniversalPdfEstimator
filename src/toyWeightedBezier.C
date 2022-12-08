@@ -105,19 +105,18 @@ int main(int argc, char *argv[]){
 	rs.SetRange(xmin,xmax);
 	rs.SampleGaussian(mu, sigma, nSamples, x_global);
 	rs.SampleGaussian(mu,sigma, nSamples, r_global);
-	x_global[0] = 0.;
-	r_global[0] = 0.;
-	x_global[nSamples-1] = 1.;
-	r_global[nSamples-1] = 1.;
 	
 	
 	//test SelectPoints
-	double t_test[nDataPts];
 	rs.SelectPoints(x_global, nSamples, x, nDataPts);
-	for(int i = 0; i < nDataPts; i++) cout << "t_test " << i << ": " << t_test[i] << endl;
-	
+	rs.SelectPoints(r_global, nSamples, r, nDataPts);
+	x[0] = 0.;
+	r[0] = 0.;
+	x[nDataPts-1] = 1.;
+	r[nDataPts-1] = 1.;
+	for(int i = 0; i < nDataPts; i++) cout << i << " x: " << x[i] << " r: " << r[i] << endl;
 	//sort sim x for plotting
-	std::sort(x,x+nDataPts);
+	//std::sort(x,x+nDataPts); - don't need to since sampling from larger population
 
 
 	

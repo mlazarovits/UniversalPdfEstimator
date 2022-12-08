@@ -95,4 +95,12 @@ double RandomSample::SampleGaussian(double mean, double sigma, int Nsample, doub
 
 
 
+void RandomSample::SelectPoints(double* in, int nIn, double* out, int nOut){
+	SetRange(0,nIn);
+	for(int i = 0; i < nOut; i++){
+		int idx = SampleFlat();
+		out[i] = in[idx];
+	}
+
+}
 

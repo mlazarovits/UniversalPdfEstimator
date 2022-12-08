@@ -15,7 +15,8 @@ class RandomSample{
 		double SampleFlat();
 		void SetRange(double xmin, double xmax);
 		double SampleGaussian(double mean, double sigma, int Nsample, double* samples);
-		
+		void SelectPoints(double* in, int nIn, double* out, int nOut);	
+
 		double _xmax = 5;
 		double _xmin = -5;
 

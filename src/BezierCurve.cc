@@ -99,7 +99,7 @@ void BezierCurve::CalculateWeightedCurve(double* x, double* w){
 
 
 
-void BezierCurve::CalculateWeightedCurve_MultiOrder(double* x, double* w, double o){
+void BezierCurve::CalculateWeightedCurve_PopParam(double* x, double* w, double o){
 	//sample r from 0 to 1 nSamples times
 	//cout << "order: " << _n*o << " with " << _n+1 << " terms" <<  endl;
 	double norm;

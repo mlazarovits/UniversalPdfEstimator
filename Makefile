@@ -23,7 +23,7 @@ OBJ_FILES   = $(addprefix $(OUTOBJ),$(notdir $(CC_FILES:.cc=.o)))
 
 
 #specify what to make
-all: toyBezier.x toyWeightedBezier.x
+all: toyBezier.x toyWeightedBezier.x toyBezierTransform.x
 
 #executables
 toyBezier.x: $(SRCDIR)toyBezier.C $(OBJ_FILES) $(HH_FILES)
@@ -34,6 +34,9 @@ toyWeightedBezier.x: $(SRCDIR)toyWeightedBezier.C $(OBJ_FILES) $(HH_FILES)
 	$(CXX) $(CXXFLAGS) -o toyWeightedBezier.x $(OUTOBJ)/*.o $(GLIBS) $ $<
 	touch toyWeightedBezier.x
 
+toyBezierTransform.x: $(SRCDIR)toyBezierTransform.C $(OBJ_FILES) $(HH_FILES)
+	$(CXX) $(CXXFLAGS) -o toyBezierTransform.x $(OUTOBJ)/*.o $(GLIBS) $ $<
+	touch toyBezierTransform.x
 
 #where to put object files
 $(OUTOBJ)%.o: src/%.cc include/%.hh

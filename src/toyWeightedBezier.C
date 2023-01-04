@@ -133,7 +133,8 @@ int main(int argc, char *argv[]){
 //		//set rank and weight for simulated data for plotting
 		for(int i = 0; i < nDataPts; i++){
 			if(i == 0 || i == nDataPts-1) ws[i] = 1.;
-			else ws[i] = w_CPs[w];
+			//weight is distance to diagonal
+			else ws[i] = w_CPs[w]*fabs(x[i] - r[i])/pow(2,0.5);
 			cout << "x: "<< x[i] << " r: " << r[i] << " with weight: " << ws[i] << endl;
 		}
 
@@ -146,13 +147,13 @@ int main(int argc, char *argv[]){
 		BezierCurve r_bc(r, nDataPts, t, nSamples);
 		x_bc.CalculateWeightedCurve(x_approx, ws);
 		r_bc.CalculateWeightedCurve(r_approx, ws);
-		cout << "calculated weighted Bezier curves for x and r" << endl;
+		cout << "calculated weighted Bezier curves for x and r - order " << nDataPts-2 << endl;
 		int o = 2;
 		double x_approx_n4[nSamples+1]; //filled by reference in CalculateCurve
 		double r_approx_n4[nSamples+1]; //filled by reference in CalculateCurve
 		x_bc.CalculateWeightedCurve_PopParam(x_approx_n4, ws, o);
 		r_bc.CalculateWeightedCurve_PopParam(r_approx_n4, ws, o);
-		cout << "calculated weighted Bezier curves for x and r" << endl;
+		cout << "calculated weighted Bezier curves for x and r - order " << (nDataPts-2)*o << endl;
 		
 
 
@@ -195,8 +196,8 @@ int main(int argc, char *argv[]){
 		}
 		
 		leg->AddEntry(gr_data, "Original data/control points");
-		leg->AddEntry(grs[0],"2nd order Bezier approximation");
-		leg->AddEntry(grs_n4[0],"4th order Bezier approximation");
+		leg->AddEntry(grs[0],"3rd order Bezier approximation");
+		leg->AddEntry(grs_n4[0],"6th order Bezier approximation");
 		
 		cv->cd();
 		cv->SetRightMargin(0.09);
